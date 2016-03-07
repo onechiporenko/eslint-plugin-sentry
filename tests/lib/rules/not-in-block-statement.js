@@ -7,7 +7,7 @@ var ruleTester = new RuleTester({env: {es6: true}});
 
 var m = "Statement is not in the block-body.";
 
-var Jsonium = require('jsonium');
+var Jsonium = require("jsonium");
 var j = new Jsonium();
 
 var cases = [
