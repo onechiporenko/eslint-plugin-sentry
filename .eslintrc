@@ -4,6 +4,7 @@
     "quotes": [2, "double"]
   },
   "env": {
+    "mocha": true,
     "browser": true,
     "node": true
   }
