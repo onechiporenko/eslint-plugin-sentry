@@ -86,7 +86,8 @@ var invalidWithIndependentBinaries = [
   {BINARY: "({{A}} {{OPERATOR}} {{B}}) || (C {{OPERATOR}} D) || ({{A}} {{OPERATOR}} {{B}})", TYPE: "LogicalExpression"}, // triple OR
   {BINARY: "({{A}} {{OPERATOR}} {{B}} && C {{OPERATOR}} D) && {{A}} {{OPERATOR}} {{B}}", TYPE: "LogicalExpression"}, // triple AND with paren
   {BINARY: "{{A}} {{OPERATOR}} {{B}} && (C {{OPERATOR}} D && {{A}} {{OPERATOR}} {{B}})", TYPE: "LogicalExpression"}, // triple AND with paren 2
-  {BINARY: "{{A}} {{OPERATOR}} {{B}} && {{A}} {{OPERATOR}} {{B}} && {{A}} {{OPERATOR}} {{B}}", TYPE: "LogicalExpression"} // triple AND 2
+  {BINARY: "{{A}} {{OPERATOR}} {{B}} && {{A}} {{OPERATOR}} {{B}} && {{A}} {{OPERATOR}} {{B}}", TYPE: "LogicalExpression"}, // triple AND 2
+  {BINARY: "this.get('a') {{OPERATOR}} this.get(\"a\")", TYPE: "BinaryExpression"} // strings with different quotes
 ];
 invalidWithIndependentBinaries = j
   .setTemplates(invalidWithIndependentBinaries)
@@ -135,11 +136,13 @@ ruleTester.run("no-eq-left-right", rule, {
     .createCombos(["code"], cases)
     .useCombosAsTemplates()
     .createCombos(["code"], validBinaries)
+    .uniqueCombos()
     .getCombos(),
   invalid: j
     .setTemplates(invalidTestTemplates)
     .createCombos(["code"], cases)
     .useCombosAsTemplates()
     .createCombos(["code", "errors.0.type"], invalidBinaries)
+    .uniqueCombos()
     .getCombos()
 });
