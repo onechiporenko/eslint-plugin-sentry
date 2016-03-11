@@ -36,24 +36,6 @@ var validTestTemplates = [
       "if ({{A}}) {}" +
         "someFuncCall();" +
       "if ({{B}}) {}"
-  },
-  {
-    code:
-      "if ({{A}}) {" +
-        "a.b(function () {" +
-          "if ({{B}}) {}" +
-        "});" +
-      "}"
-  },
-  {
-    code:
-      "if ({{A}}) {" +
-      "}" +
-      "else {" +
-        "a.b(function () {" +
-          "if ({{B}}) {}" +
-        "});" +
-      "}"
   }
 ];
 
