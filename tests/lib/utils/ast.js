@@ -211,6 +211,14 @@ describe("ast", function () {
         expected: "if(!a){b=2;}"
       },
       {
+        code: "if (!a) { b = 2 }else {b = 3}",
+        expected: "if(a){b=3;}else{b=2;}"
+      },
+      {
+        code: "if (!!a) { b = 2 } else {b = 3}",
+        expected: "if(!!a){b=2;}else{b=3;}"
+      },
+      {
         code: "var a = b !== c ? d : e;",
         expected: "var a=b===c?e:d;"
       },
