@@ -38,6 +38,7 @@ var validSingleConditions = [
 
 var validTernary = [
   {IF: "a + b", ELSE: "b + a"},
+  {IF: "a['b.c'].d", ELSE: "a.b.c.d"},
   {IF: "b && c", ELSE: "c && d"},
   {IF: "a.b.c('c')", ELSE: "a.b.c('a')"},
   {IF: "d || c", ELSE: "b || c"}
@@ -101,6 +102,7 @@ var singleCases = [
 var invalidTernary = [
   {IF: "b", ELSE: "b"},
   {IF: "b.c.d", ELSE: "b.c.d"},
+  {IF: "b['c']['d']", ELSE: "b.c.d"},
   {IF: "x.y.z()", ELSE: "x.y.z()"},
   {IF: "b * c", ELSE: "c * b"},
   {IF: "a + b", ELSE: "a + b"},

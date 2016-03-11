@@ -225,6 +225,18 @@ describe("ast", function () {
       {
         code: "a && d && c && b;",
         expected: "a&&b&&c&&d;"
+      },
+      {
+        code: "a['b']",
+        expected: "a.b;"
+      },
+      {
+        code: "a['b.c']",
+        expected: "a['b.c'];"
+      },
+      {
+        code: "a['b']()",
+        expected: "a.b();"
       }
     ].forEach(function (test) {
       it(test.code, function () {

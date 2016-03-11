@@ -87,7 +87,8 @@ var invalidWithIndependentBinaries = [
   {BINARY: "({{A}} {{OPERATOR}} {{B}} && C {{OPERATOR}} D) && {{A}} {{OPERATOR}} {{B}}", TYPE: "LogicalExpression"}, // triple AND with paren
   {BINARY: "{{A}} {{OPERATOR}} {{B}} && (C {{OPERATOR}} D && {{A}} {{OPERATOR}} {{B}})", TYPE: "LogicalExpression"}, // triple AND with paren 2
   {BINARY: "{{A}} {{OPERATOR}} {{B}} && {{A}} {{OPERATOR}} {{B}} && {{A}} {{OPERATOR}} {{B}}", TYPE: "LogicalExpression"}, // triple AND 2
-  {BINARY: "this.get('a') {{OPERATOR}} this.get(\"a\")", TYPE: "BinaryExpression"} // strings with different quotes
+  {BINARY: "this.get('a') {{OPERATOR}} this.get(\"a\")", TYPE: "BinaryExpression"}, // strings with different quotes
+  {BINARY: "a.b {{OPERATOR}} a['b']", TYPE: "BinaryExpression"} // a.b => a['b']
 ];
 invalidWithIndependentBinaries = j
   .setTemplates(invalidWithIndependentBinaries)
