@@ -36,6 +36,13 @@ var validSingleConditions = [
   {IF: "var f = (d || b) && a || c;", ELSE: "var f = c || a && (b && d);"}
 ];
 
+var validTernary = [
+  {IF: "a + b", ELSE: "b + a"},
+  {IF: "b && c", ELSE: "c && d"},
+  {IF: "a.b.c('c')", ELSE: "a.b.c('a')"},
+  {IF: "d || c", ELSE: "b || c"}
+];
+
 var invalidSingleConditions = [
   {IF: "a = 1;", ELSE: "a = 1;"},
   {IF: "/*some comment*/ a = 1;", ELSE: "// some comment 2\na = 1;"},
@@ -85,10 +92,27 @@ var invalidMultipleConditions = [
 ];
 
 var singleCases = [
-  {CODE: "if (condition) { {{IF}} } else { {{ELSE}} }"},
-  {CODE: "if (condition) { {{IF}} } else  {{ELSE}} "},
-  {CODE: "if (condition) {{IF}} else { {{ELSE}} }"},
-  {CODE: "if (condition) {{IF}} else {{ELSE}}"}
+  {CODE: "if (condition) { {{IF}} } else { {{ELSE}} }", TYPE: "IfStatement"},
+  {CODE: "if (condition) { {{IF}} } else  {{ELSE}} ", TYPE: "IfStatement"},
+  {CODE: "if (condition) {{IF}} else { {{ELSE}} }", TYPE: "IfStatement"},
+  {CODE: "if (condition) {{IF}} else {{ELSE}}", TYPE: "IfStatement"}
+];
+
+var invalidTernary = [
+  {IF: "b", ELSE: "b"},
+  {IF: "b.c.d", ELSE: "b.c.d"},
+  {IF: "x.y.z()", ELSE: "x.y.z()"},
+  {IF: "b * c", ELSE: "c * b"},
+  {IF: "a + b", ELSE: "a + b"},
+  {IF: "a && b", ELSE: "a && b"},
+  {IF: "a == b", ELSE: "b == a"},
+  {IF: "cccc && bbbb", ELSE: "bbbb && cccc"},
+  {IF: "a && b && c", ELSE: "b && c && a"},
+  {IF: "a==b && c==d && e==f", ELSE: "f==e && b==a && d==c"}
+];
+
+var ternaryCases = [
+  {CODE: "var a = condition ? {{IF}} : {{ELSE}};", TYPE: "ConditionalExpression"}
 ];
 
 var multipleCases = [
@@ -99,6 +123,12 @@ var validTestCases = j
   .setTemplates(singleCases)
   .createCombos(["CODE"], validSingleConditions)
   .getCombos();
+validTestCases = j
+  .setTemplates(ternaryCases)
+  .createCombos(["CODE"], validTernary)
+  .uniqueCombos()
+  .concatCombos(validTestCases)
+  .getCombos();
 
 var invalidTestCases = j
   .setTemplates(singleCases)
@@ -107,6 +137,12 @@ var invalidTestCases = j
 invalidTestCases = j
   .setTemplates(multipleCases)
   .createCombos(["CODE"], invalidMultipleConditions)
+  .uniqueCombos()
+  .concatCombos(invalidTestCases)
+  .getCombos();
+invalidTestCases = j
+  .setTemplates(ternaryCases)
+  .createCombos(["CODE"], invalidTernary)
   .uniqueCombos()
   .concatCombos(invalidTestCases)
   .getCombos();
@@ -123,7 +159,7 @@ var invalidTestTemplates = [
     code:
       "{{CODE}}",
     errors: [
-      {message: m, type: "IfStatement"}
+      {message: m, type: "{{TYPE}}"}
     ]
   }
 ];
@@ -136,7 +172,7 @@ ruleTester.run("no-eq-if-else", rule, {
     .getCombos(),
   invalid: j
     .setTemplates(invalidTestTemplates)
-    .createCombos(["code"], invalidTestCases)
+    .createCombos(["code", "errors.0.type"], invalidTestCases)
     .uniqueCombos()
     .getCombos()
 });

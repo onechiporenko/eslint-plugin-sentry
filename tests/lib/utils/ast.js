@@ -115,6 +115,10 @@ describe("ast", function () {
         expected: "var a={a:1,b:2};"
       },
       {
+        code: "b && a",
+        expected: "a&&b;"
+      },
+      {
         code: "b===a",
         expected: "a===b;"
       },
