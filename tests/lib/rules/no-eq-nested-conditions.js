@@ -20,8 +20,32 @@ var ab = [
   {A: "a || b", B: "b || a"},
   {A: "a || b || c", B: "b || c || a"},
   {A: "a * b", B: "b * a"},
+  {A: "a < b", B: "b > a"},
+  {A: "a <= b", B: "b >= a"},
   {A: "this.a('b')", B: "this.a('b')"},
-  {A: "a['b']", B: "a.b"}
+  {A: "a['b']", B: "a.b"},
+  {A: "!a", B: "!a||!b"},
+  {A: "a === b && c === d", B: "b === a && e === f"},
+  {A: "a === b && c === d", B: "e === f && b === a"},
+  {A: "!a && c === d", B: "e === f && !a"},
+  {A: "a['v'] === b.a && c === d", B: "e === f && b.a === a.v"},
+  {A: "a[v] === b.a && c === d", B: "e === f && b.a === a[v]"},
+  {A: "a * b === b * c && c * d === e * f", B: "b*c === b*a && c*d === f * e"}
+];
+
+var validUnique = [
+  {
+    code:
+      "if (a === b && c === d) {" +
+        "if (a === b || c === d) {}" +
+      "}"
+  },
+  {
+    code:
+      "if (a === b) {" +
+        "if (a === c) {}" +
+      "}"
+  }
 ];
 
 var validTestTemplates = [
@@ -104,6 +128,6 @@ var invalidTestTemplates = [
 ];
 
 ruleTester.run("no-eq-nested-conditions", rule, {
-  valid: j.setTemplates(validTestTemplates).createCombos(["code"], ab).uniqueCombos().getCombos(),
+  valid: j.setTemplates(validTestTemplates).createCombos(["code"], ab).uniqueCombos().concatCombos(validUnique).getCombos(),
   invalid: j.setTemplates(invalidTestTemplates).createCombos(["code"], ab).uniqueCombos().getCombos()
 });
