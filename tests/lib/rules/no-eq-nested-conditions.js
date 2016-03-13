@@ -42,8 +42,21 @@ var validUnique = [
   },
   {
     code:
+      "if (a) {" +
+        "if (!a || !b) {}" +
+      "} " +
+      "else {}"
+  },
+  {
+    code:
       "if (a === b) {" +
         "if (a === c) {}" +
+      "}"
+  },
+  {
+    code:
+      "if (a['v'] === a[v]) {" +
+        "if (a['v'] === a.v) {}" +
       "}"
   }
 ];
