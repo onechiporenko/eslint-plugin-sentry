@@ -164,6 +164,14 @@ describe("ast", function () {
         expected: "a&&b&&c&&d;"
       },
       {
+        code: "a[b]",
+        expected: "a[b];"
+      },
+      {
+        code: "if (a.hasOwnProperty('b')){}",
+        expected: "if(a.hasOwnProperty('b')){}"
+      },
+      {
         code: "a['b']",
         expected: "a.b;"
       },
@@ -174,6 +182,38 @@ describe("ast", function () {
       {
         code: "a['b']()",
         expected: "a.b();"
+      },
+      {
+        code: "var a = 1; var b = 2;",
+        expected: "var a=1,b=2;"
+      },
+      {
+        code: "var a = 1; var b = 2; var c = 3;",
+        expected: "var a=1,b=2,c=3;"
+      },
+      {
+        code: "var a = 1,b = 2; var c = 3;",
+        expected: "var a=1,b=2,c=3;"
+      },
+      {
+        code: "var a = 1,b = 2; const c = 3;",
+        expected: "var a=1,b=2;const c=3;"
+      },
+      {
+        code: "var a = 1; let b = 2; const c = 3;",
+        expected: "var a=1;let b=2;const c=3;"
+      },
+      {
+        code: "const c = 3; let b = 2; var a = 1;",
+        expected: "const c=3;let b=2;var a=1;"
+      },
+      {
+        code: "var a = 1, b; let c; var d = 2;",
+        expected: "var a=1,b,d=2;let c;"
+      },
+      {
+        code: "var a = 1; someFuncCall(); var b = 2;",
+        expected: "var a=1;someFuncCall();var b=2;"
       }
     ].forEach(function (test) {
         it(test.code, function () {

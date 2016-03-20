@@ -89,7 +89,8 @@ var invalidMultipleConditions = [
   {IF: "if (a == 1) {if (b == 2) {v = 3;}}", ELSE: "if (1 == a) {if (2 == b) {v = 3;}}"},
   {IF: "if (a == 1) {v = 2;}", ELSE: "if (a == 1) v = 2;"},
   {IF: "if (a == 1) v = 2;", ELSE: "if (a == 1) v = 2;"},
-  {IF: "if (a == 1) {v = 2;}", ELSE: "if (a == 1) {v = 2;}"}
+  {IF: "if (a == 1) {v = 2;}", ELSE: "if (a == 1) {v = 2;}"},
+  {IF: "var a = 1, b = 2;", ELSE: "var b = 2, a = 1;"}
 ];
 
 var singleCases = [
