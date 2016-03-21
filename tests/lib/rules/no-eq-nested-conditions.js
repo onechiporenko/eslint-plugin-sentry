@@ -58,6 +58,55 @@ var validUnique = [
       "if (a['v'] === a[v]) {" +
         "if (a['v'] === a.v) {}" +
       "}"
+  },
+  {
+    code:
+      "if (a === 1) { " +
+        "a = 2;" +
+        "if (a == 1) {}" +
+      "}"
+  },
+  {
+    code:
+      "if (a === 1) { " +
+        "a = 2;" +
+        "if (a == 1) {}" +
+      "}"
+  },
+  {
+    code:
+      "if (a === 1 && b === 2) { " +
+        "a = 2;" +
+        "b = 1;" +
+        "c = 3;" +
+        "if (a == 1 && b === 2) {}" +
+      "}"
+  },
+  {
+    code:
+      "if (a === 1) {" +
+        "f.forEach(function () {" +
+          "a = 2; " +
+          "if (a === 1){}" +
+        "});" +
+      "}"
+  }
+];
+
+var invalidUnique = [
+  {
+    code:
+      "if (a === 1 && b === 2) { " +
+        "if (a == 1 && b === 2) {}" +
+      "} " +
+      "else {" +
+        "a = 2;" +
+        "b = 1;" +
+        "c = 3;" +
+      "}",
+    errors: [
+      {message: m, type: "IfStatement"}
+    ]
   }
 ];
 
@@ -142,5 +191,5 @@ var invalidTestTemplates = [
 
 ruleTester.run("no-eq-nested-conditions", rule, {
   valid: j.setTemplates(validTestTemplates).createCombos(["code"], ab).uniqueCombos().concatCombos(validUnique).getCombos(),
-  invalid: j.setTemplates(invalidTestTemplates).createCombos(["code"], ab).uniqueCombos().getCombos()
+  invalid: j.setTemplates(invalidTestTemplates).createCombos(["code"], ab).uniqueCombos().concatCombos(invalidUnique).getCombos()
 });

@@ -99,4 +99,104 @@ describe("ast", function () {
 
   });
 
+  describe("#getVariables", function () {
+
+    [
+      {
+        code: "if (a === 1) {}",
+        expected: ["a"]
+      },
+      {
+        code: "if (a) {}",
+        expected: ["a"]
+      },
+      {
+        code: "if (!a) {}",
+        expected: ["a"]
+      },
+      {
+        code: "if (a === b) {}",
+        expected: ["a", "b"]
+      },
+      {
+        code: "if (a && b) {}",
+        expected: ["a", "b"]
+      },
+      {
+        code: "if (1 === a) {}",
+        expected: ["a"]
+      },
+      {
+        code: "if (a.b === 1) {}",
+        expected: ["a.b"]
+      },
+      {
+        code: "if (a[b] === 1) {}",
+        expected: ["a[b]"]
+      },
+      {
+        code: "if (a['b'] === 1) {}",
+        expected: ["a['b']"]
+      },
+      {
+        code: "if (a['b'].c === 1) {}",
+        expected: ["a['b'].c"]
+      },
+      {
+        code: "if (a.b.c === 1) {}",
+        expected: ["a.b.c"]
+      },
+      {
+        code: "if (a.b.c() === 1) {}",
+        expected: []
+      },
+      {
+        code: "if (a.b().c === 1) {}",
+        expected: []
+      },
+      {
+        code: "if (a().b.c === 1) {}",
+        expected: []
+      },
+      {
+        code: "if (a().b.c.d === 1) {}",
+        expected: []
+      },
+      {
+        code: "if (a().b().c.d === 1) {}",
+        expected: []
+      },
+      {
+        code: "if (a.b().c().d === 1) {}",
+        expected: []
+      },
+      {
+        code: "if (a.b().c.d() === 1) {}",
+        expected: []
+      },
+      {
+        code: "if (a.b().c.d.e() === 1) {}",
+        expected: []
+      },
+      {
+        code: "if (a.b()[c].d.e() === 1) {}",
+        expected: []
+      },
+      {
+        code: "if (a.c === 1 || a.c === 2) {}",
+        expected: ["a.c"]
+      },
+      {
+        code: "if (a.c === 1 || a.c === 2 && a[d] === 1) {}",
+        expected: ["a.c", "a[d]"]
+      }
+    ].forEach(function (test) {
+      it(test.code, function () {
+        var parsed = espree.parse(test.code);
+        expect(ast.getVariables(parsed)).to.be.eql(test.expected);
+      });
+    });
+
+  });
+
 });

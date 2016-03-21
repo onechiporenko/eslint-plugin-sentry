@@ -56,4 +56,45 @@ describe("collections", function () {
 
   });
 
+  describe("#areEqual", function () {
+
+    [
+      {
+        a: [],
+        b: [],
+        e: true
+      },
+      {
+        a: [1],
+        b: [],
+        e: false
+      },
+      {
+        a: [],
+        b: [1],
+        e: false
+      },
+      {
+        a: [1, 2],
+        b: [2, 1],
+        e: false
+      },
+      {
+        a: [1],
+        b: [1],
+        e: true
+      },
+      {
+        a: [1, 2, 3],
+        b: [1, 2, 3],
+        e: true
+      }
+    ].forEach(function (test) {
+      it(JSON.stringify(test.a) + " " + JSON.stringify(test.b), function () {
+        expect(c.areEqual(test.a, test.b)).to.be.equal(test.e);
+      });
+    });
+
+  });
+
 });
