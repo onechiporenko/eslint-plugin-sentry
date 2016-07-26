@@ -1,16 +1,8 @@
-//------------------------------------------------------------------------------
-// Requirements
-//------------------------------------------------------------------------------
-
 var Condition = require("../../../lib/classes/condition.js");
-var vars = require("../../../lib/vars.js");
+var vars = require("../../../lib/utils/vars.js");
 var expect = require("chai").expect;
 var espree = require("espree");
 var escodegen = require("escodegen");
-
-//------------------------------------------------------------------------------
-// Tests
-//------------------------------------------------------------------------------
 
 function parseExpression(code) {
   return espree.parse(code).body[0].expression;
@@ -19,7 +11,7 @@ function parseExpression(code) {
 
 describe("#Condition", function () {
 
-  describe("#constructor", function() {
+  describe("#constructor", function () {
     it("should set `conditionNode`", function () {
       var code = parseExpression("a === 1 && b === 2");
       var condition = new Condition(code);
@@ -32,7 +24,7 @@ describe("#Condition", function () {
     it("original condition node is not changed", function () {
       var code = parseExpression("a === b");
       var condition = new Condition(code);
-      condition.normalize();
+      condition.generateNormalizedNode();
       expect(condition.conditionNode).to.be.eql(code);
     });
 
@@ -105,139 +97,271 @@ describe("#Condition", function () {
       it(JSON.stringify(test.c), function () {
         var code = parseExpression(test.c);
         var condition = new Condition(code);
-        var normalizedConditionNode = condition.normalize();
+        condition.generateNormalizedNode();
+        var normalizedConditionNode = condition.normalizedNodes;
         expect(escodegen.generate(normalizedConditionNode, vars.codeGenOptions)).to.be.equal(test.e);
       });
     });
 
   });
 
-  describe("#getOperands", function () {
+  describe("#generateOperands", function () {
     [
       {
         c: "!a",
         e: {
-          "!a": "__1"
+          "!a": "__0__0"
         }
       },
       {
         c: "a.b == 1",
         e: {
-          "a.b==1": "__1"
+          "a.b==1": "__0__0"
         }
       },
       {
         c: "a.b() == 1",
         e: {
-          "a.b()==1": "__1"
+          "a.b()==1": "__0__0"
         }
       },
       {
         c: "a == 1",
         e: {
-          "a==1": "__1"
+          "a==1": "__0__0"
         }
       },
       {
         c: "a == 1 && b==1",
         e: {
-          "a==1": "__2",
-          "b==1": "__1"
+          "a==1": "__0__1",
+          "b==1": "__0__0"
         }
       },
       {
         c: "a == 1 || b==1 || 1==a",
         e: {
-          "a==1": "__2",
-          "b==1": "__1"
+          "a==1": "__0__1",
+          "b==1": "__0__0"
         }
       },
       {
         c: "(a == 1 || b==1) && 1==a",
         e: {
-          "a==1": "__2",
-          "b==1": "__1"
+          "a==1": "__0__1",
+          "b==1": "__0__0"
         }
       },
       {
         c: "a == 1 || (b!=1 && 1==a)",
         e: {
-          "a==1": "__2",
-          "b!=1": "__1"
+          "a==1": "__0__1",
+          "b!=1": "__0__0"
         }
       },
       {
         c: "a >= 1 || (b!=1 && 1<=a)",
         e: {
-          "a>=1": "__2",
-          "b!=1": "__1"
+          "a>=1": "__0__1",
+          "b!=1": "__0__0"
         }
       },
       {
         c: "a != b && b != c",
         e: {
-          "b!=a": "__2",
-          "c!=b": "__1"
+          "b!=a": "__0__1",
+          "c!=b": "__0__0"
+        }
+      },
+      {
+        c: "a && a.b",
+        e: {
+          "a.b": "__0__0",
+          "a": "__0__1"
         }
       }
     ].forEach(function (test) {
       it(JSON.stringify(test.c), function () {
         var code = parseExpression(test.c);
         var condition = new Condition(code);
-        code = condition.normalize();
-        condition.getOperands(code);
+        condition.generateNormalizedNode();
+        code = condition.normalizedNodes;
+        condition.generateOperands(code);
         expect(condition.operands).to.be.eql(test.e);
       });
     });
   });
 
-  describe("#replaceOperands", function () {
+  describe("#_simplifyOperands", function () {
     [
       {
         c: "!a",
-        e: "__1"
+        e: "__0__0"
       },
       {
         c: "a.b == 1",
-        e: "__1"
+        e: "__0__0"
       },
       {
         c: "a.b() == 1",
-        e: "__1"
+        e: "__0__0"
       },
       {
         c: "a == 1 && b==1",
-        e: "__1&&__2"
+        e: "__0__0&&__0__1"
       },
       {
         c: "a == 1 || b==1 || 1==a",
-        e: "__1||__2||__2"
+        e: "__0__0||__0__1||__0__1"
       },
       {
         c: "(a == 1 || b==1) && 1==a",
-        e: "(__1||__2)&&__2"
+        e: "(__0__0||__0__1)&&__0__1"
       },
       {
         c: "a == 1 || (b!=1 && 1==a)",
-        e: "__1&&__2||__2"
+        e: "__0__0&&__0__1||__0__1"
       },
       {
         c: "a >= 1 || (b!=1 && 1<=a)",
-        e: "__1&&__2||__2"
+        e: "__0__0&&__0__1||__0__1"
       },
       {
         c: "a != b && b != c",
-        e: "__1&&__2"
+        e: "__0__0&&__0__1"
+      },
+      {
+        c: "a && a.b()",
+        e: "__0__0&&__0__1"
+      },
+      {
+        c: "a.b() && a",
+        e: "__0__0&&__0__1"
+      },
+      {
+        c: "a[b==c?'b':'c'] == 1 && b",
+        e: "__0__0&&__0__1"
       }
     ].forEach(function (test) {
       it(JSON.stringify(test.c), function () {
         var code = parseExpression(test.c);
         var condition = new Condition(code);
-        code = condition.normalize();
-        condition.getOperands(code);
-        expect(condition.replaceOperands()).to.be.equal(test.e);
+        condition.generateNormalizedNode();
+        condition.generateOperands(condition.normalizedNodes);
+        expect(condition._simplifyOperands()).to.be.equal(test.e);
       });
     });
+  });
+
+  describe("#generateTruthTable", function () {
+
+    [
+      {c: "a", e: {}},
+      {
+        c: "a && b", e: {
+        __0__0: {
+          "false": {
+            "false": false,
+            "true": false
+          },
+          "true": {
+            "false": false,
+            "true": true
+          }
+        },
+        __0__1: {
+          "false": {
+            "false": false,
+            "true": false
+          },
+          "true": {
+            "false": false,
+            "true": true
+          }
+        }
+      }
+      },
+      {
+        c: "a && b || a", e: {
+        __0__0: {
+          "false": {
+            "true": true,
+            "false": false
+          },
+          "true": {
+            "true": true,
+            "false": false
+          }
+        },
+        __0__1: {
+          "false": {
+            "true": false,
+            "false": false
+          },
+          "true": {
+            "true": true,
+            "false": true
+          }
+        }
+      }
+      },
+      {
+        c: "a && b && c || a", e: {
+        __0__0: {
+          true: {
+            "false,false": false,
+            "true,false": false,
+            "false,true": true,
+            "true,true": true
+          },
+          false: {
+            "false,false": false,
+            "true,false": false,
+            "false,true": true,
+            "true,true": true
+          }
+        },
+        __0__1: {
+          true: {
+            "false,false": false,
+            "true,false": false,
+            "false,true": true,
+            "true,true": true
+          },
+          false: {
+            "false,false": false,
+            "true,false": false,
+            "false,true": true,
+            "true,true": true
+          }
+        },
+        __0__2: {
+          true: {
+            "false,false": true,
+            "true,false": true,
+            "false,true": true,
+            "true,true": true
+          },
+          false: {
+            "false,false": false,
+            "true,false": false,
+            "false,true": false,
+            "true,true": false
+          }
+        }
+      }
+      }
+    ].forEach(function (test) {
+      it(JSON.stringify(test.c), function () {
+        var code = parseExpression(test.c);
+        var condition = new Condition(code);
+        condition.generateNormalizedNode();
+        condition.generateOperands(condition.normalizedNodes);
+        condition.generateTruthTable();
+        expect(condition.truthTable).to.be.eql(test.e);
+      });
+    });
+
   });
 
 });
