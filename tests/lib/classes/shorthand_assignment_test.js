@@ -1,6 +1,6 @@
-var ShorthandAssignment = require("../../../lib/classes/shorthand_assignment.js");
-var expect = require("chai").expect;
-var espree = require("espree");
+const ShorthandAssignment = require("../../../lib/classes/shorthand_assignment.js");
+const expect = require("chai").expect;
+const espree = require("espree");
 
 function parseExpression(code) {
   return espree.parse(code).body[0].expression;
