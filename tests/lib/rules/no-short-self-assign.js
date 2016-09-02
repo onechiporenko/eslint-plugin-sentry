@@ -10,26 +10,26 @@
 // Requirements
 //------------------------------------------------------------------------------
 
-var rule = require("../../../lib/rules/no-short-self-assign"),
+const rule = require("../../../lib/rules/no-short-self-assign"),
   RuleTester = require("eslint").RuleTester;
 
-var Jsonium = require("jsonium");
-var j = new Jsonium();
+const Jsonium = require("jsonium");
+const j = new Jsonium();
 
-var m = "Shorthand self assignment are hard to read";
+const m = "Shorthand self assignment are hard to read";
 
 //------------------------------------------------------------------------------
 // Tests
 //------------------------------------------------------------------------------
 
-var operators = [
+const operators = [
   {OPERATOR: "+="},
   {OPERATOR: "-="},
   {OPERATOR: "*="},
   {OPERATOR: "/="}
 ];
 
-var validAssignments = [
+const validAssignments = [
   {ASSIGN: "a {{OPERATOR}} b;"},
   {ASSIGN: "a {{OPERATOR}} b.a;"},
   {ASSIGN: "a {{OPERATOR}} b['a'];"},
@@ -37,19 +37,19 @@ var validAssignments = [
   {ASSIGN: "a {{OPERATOR}} a.b;"}
 ];
 
-var invalidAssignment = [
+const invalidAssignment = [
   {ASSIGN: "a {{OPERATOR}} a + b;"},
   {ASSIGN: "a {{OPERATOR}} b - a;"}
 ];
 
-var validTestTemplates = [
+const validTestTemplates = [
   {
     code:
       "{{ASSIGN}}"
   }
 ];
 
-var invalidTestTemplates = [
+const invalidTestTemplates = [
   {
     code:
       "{{ASSIGN}}",
@@ -59,7 +59,7 @@ var invalidTestTemplates = [
   }
 ];
 
-var ruleTester = new RuleTester({env: {es6: true}});
+const ruleTester = new RuleTester({env: {es6: true}});
 ruleTester.run("no-short-self-assign", rule, {
   valid: j
     .setTemplates(validTestTemplates)

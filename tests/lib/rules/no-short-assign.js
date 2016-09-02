@@ -10,19 +10,19 @@
 // Requirements
 //------------------------------------------------------------------------------
 
-var rule = require("../../../lib/rules/no-short-assign"),
+const rule = require("../../../lib/rules/no-short-assign"),
   RuleTester = require("eslint").RuleTester;
 
-var Jsonium = require("jsonium");
-var j = new Jsonium();
+const Jsonium = require("jsonium");
+const j = new Jsonium();
 
-var m = "Looks like `a =+ b` is used instead of `a += b` (same for `=-`)";
+const m = "Looks like `a =+ b` is used instead of `a += b` (same for `=-`)";
 
 //------------------------------------------------------------------------------
 // Tests
 //------------------------------------------------------------------------------
 
-var validAssignments = [
+const validAssignments = [
   {ASSIGN: "a += b;"},
   {ASSIGN: "a = +b;"},
   {ASSIGN: "a =\t+b;"},
@@ -39,19 +39,19 @@ var validAssignments = [
   {ASSIGN: "a=-b;"}
 ];
 
-var invalidAssignment = [
+const invalidAssignment = [
   {ASSIGN: "a =+ b;"},
   {ASSIGN: "a =- b;"}
 ];
 
-var validTestTemplates = [
+const validTestTemplates = [
   {
     code:
       "{{ASSIGN}}"
   }
 ];
 
-var invalidTestTemplates = [
+const invalidTestTemplates = [
   {
     code:
       "{{ASSIGN}}",
@@ -61,7 +61,7 @@ var invalidTestTemplates = [
   }
 ];
 
-var ruleTester = new RuleTester({env: {es6: true}});
+const ruleTester = new RuleTester({env: {es6: true}});
 ruleTester.run("no-short-assign", rule, {
   valid: j
     .setTemplates(validTestTemplates)
