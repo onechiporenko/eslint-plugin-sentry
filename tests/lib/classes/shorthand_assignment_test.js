@@ -2,12 +2,7 @@
 
 const ShorthandAssignment = require("../../../lib/classes/shorthand_assignment.js");
 const expect = require("chai").expect;
-const espree = require("espree");
-
-function parseExpression(code) {
-  return espree.parse(code).body[0].expression;
-}
-
+const helper = require("../../helper.js");
 
 describe("#ShorthandAssignment", function () {
 
@@ -48,7 +43,7 @@ describe("#ShorthandAssignment", function () {
       }
     ].forEach(function (test) {
       it(test.c, function () {
-        const code = parseExpression(test.c);
+        const code = helper.parseExpression(test.c);
         const assignment = new ShorthandAssignment(code);
         expect(assignment.parse()).to.be.equal(test.e);
       });

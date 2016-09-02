@@ -3,14 +3,10 @@
 const RedundantCondition = require("../../../lib/classes/redundant_condition.js");
 const expect = require("chai").expect;
 const sinon = require("sinon");
-const espree = require("espree");
 const vars = require("../../../lib/utils/vars.js");
 const escodegen = require("escodegen");
 
-function parseExpression(code) {
-  return espree.parse(code).body[0].expression;
-}
-
+const helper = require("../../helper.js");
 
 describe("#RedundantCondition", function () {
 
@@ -24,7 +20,7 @@ describe("#RedundantCondition", function () {
 
   describe("#constructor", function () {
     it("should set `conditionNode`", function () {
-      const code = parseExpression("a === 1 && b === 2");
+      const code = helper.parseExpression("a === 1 && b === 2");
       const condition = new RedundantCondition(code);
       expect(condition.conditionNode).to.be.eql(code);
     });
@@ -33,7 +29,7 @@ describe("#RedundantCondition", function () {
   describe("#normalize", function () {
 
     it("original condition node is not changed", function () {
-      const code = parseExpression("a === b");
+      const code = helper.parseExpression("a === b");
       const condition = new RedundantCondition(code);
       condition.generateNormalizedNode();
       expect(condition.conditionNode).to.be.eql(code);
@@ -106,7 +102,7 @@ describe("#RedundantCondition", function () {
       }
     ].forEach(function (test) {
       it(JSON.stringify(test.c), function () {
-        const code = parseExpression(test.c);
+        const code = helper.parseExpression(test.c);
         const condition = new RedundantCondition(code);
         condition.generateNormalizedNode();
         const normalizedConditionNode = condition.normalizedNodes;
@@ -193,7 +189,7 @@ describe("#RedundantCondition", function () {
       }
     ].forEach(function (test) {
       it(JSON.stringify(test.c), function () {
-        let code = parseExpression(test.c);
+        let code = helper.parseExpression(test.c);
         const condition = new RedundantCondition(code);
         condition.generateNormalizedNode();
         code = condition.normalizedNodes;
@@ -255,7 +251,7 @@ describe("#RedundantCondition", function () {
       }
     ].forEach(function (test) {
       it(JSON.stringify(test.c), function () {
-        const code = parseExpression(test.c);
+        const code = helper.parseExpression(test.c);
         const condition = new RedundantCondition(code);
         condition.generateNormalizedNode();
         condition.generateOperands(condition.normalizedNodes);
@@ -364,7 +360,7 @@ describe("#RedundantCondition", function () {
       }
     ].forEach(function (test) {
       it(JSON.stringify(test.c), function () {
-        const code = parseExpression(test.c);
+        const code = helper.parseExpression(test.c);
         const condition = new RedundantCondition(code);
         condition.generateNormalizedNode();
         condition.generateOperands(condition.normalizedNodes);
@@ -389,7 +385,7 @@ describe("#RedundantCondition", function () {
       {c: "a && (b || c || d) || a", e: ["d", "c", "b"]}
     ].forEach(function (test) {
       it(test.c, function () {
-        const code = parseExpression(test.c);
+        const code = helper.parseExpression(test.c);
         const condition = new RedundantCondition(code);
         expect(condition.parse()).to.be.eql(test.e);
       });

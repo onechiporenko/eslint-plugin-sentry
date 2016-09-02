@@ -25,7 +25,14 @@ const validConditions = [
 ];
 
 const invalidConditions = [
-  {COND: "x && y || x", M: "y"}
+  {COND: "x && y || x", M: "y"},
+  {COND: "a && b || a", M: "b"},
+  {COND: "a && b && c || a", M: "c, b"},
+  {COND: "a && b && c && d || a", M: "d, c, b"},
+  {COND: "a && b && c || a && b", M: "c"},
+  {COND: "a && b && c && d || a && b", M: "d, c"},
+  {COND: "a && b && (c || d) || a && b", M: "d, c"},
+  {COND: "a && (b || c || d) || a", M: "d, c, b"}
 ];
 
 const validTestTemplates = [
