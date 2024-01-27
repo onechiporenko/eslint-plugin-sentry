@@ -15,7 +15,7 @@
   "dependencies": {
     "object-path": "^0.9.2",
     "requireindex": "~1.1.0",
-    "escodegen": "~1.8.0",
+    "escodegen": "~1.14.0",
     "espurify": "~1.5.0",
     "estraverse": "~4.1.1"
   },
