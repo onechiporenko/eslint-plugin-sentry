@@ -17,7 +17,7 @@
     "requireindex": "~1.1.0",
     "escodegen": "~1.8.0",
     "espurify": "~1.5.0",
-    "estraverse": "~4.1.1"
+    "estraverse": "~4.3.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
